@@ -11,6 +11,8 @@ const Article: NextPage = ({
   extra,
   products,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  console.log(extra, 'extra')
+  console.log(products, 'prodcuts')
   return (
     <div className={styles.container}>
       <Head>

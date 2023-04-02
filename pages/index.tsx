@@ -3,24 +3,18 @@ import type {
   InferGetServerSidePropsType,
   NextPage,
 } from "next";
-import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import data from "../data.json";
+import { handleSEO } from "../utils";
+import { MetaHead } from "../src/components";
 
 const Article: NextPage = ({
-  extra,
-  products,
+  structuredData,
+  error,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  console.log(extra, 'extra')
-  console.log(products, 'prodcuts')
   return (
     <div className={styles.container}>
-      <Head>
-        <title>Brightsites seo test</title>
-        <meta name="description" content="Brightsites seo test" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
+      <MetaHead err={error} seo={structuredData} />
       <main className={styles.main}>
         <h1 className={styles.title}>Seo brightsites test</h1>
       </main>
@@ -35,15 +29,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     "public,  s-maxage=300, stale-while-revalidate=59"
   );
   context.res.setHeader("Content-Security-Policy", `frame-ancestors 'self';`);
-
+  /*
+   Typically an API call would be made here to get the available review data, then the result would be handled by the handleSEO function
+   */
+  // @ts-ignore
+  const dataset = handleSEO(data);
   try {
     return {
       props: {
-        ...data,
+        ...dataset,
+        error: false,
       },
     };
   } catch (err) {
-    return { props: { data: "err" } };
+    return {
+      props: {
+        dataset: null,
+        error: true,
+      },
+    };
   }
 };
 export default Article;
